@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { CookieService } from 'ngx-cookie-service';
 import { UserLogin } from "../models/user.mode";
 
-const url = `http://ec2-18-209-224-26.compute-1.amazonaws.com:3000`
+const url = `http://127.0.0.1:3000`
 
 @Injectable({
     providedIn: 'root'

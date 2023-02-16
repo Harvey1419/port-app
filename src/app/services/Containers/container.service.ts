@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { updateContainer } from 'src/app/models/container.model';
 
-const url = `http://ec2-18-209-224-26.compute-1.amazonaws.com:3000`
+const url = `http://localhost:3000`
 
 @Injectable({
   providedIn: 'root'
