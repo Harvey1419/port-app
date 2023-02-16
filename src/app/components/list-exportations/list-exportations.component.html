@@ -1,0 +1,54 @@
+<div class="progress-spinner" *ngIf="loader">
+  <p-progressSpinner></p-progressSpinner>
+</div>
+
+<div class="card">
+  <p-dataView
+    #dv
+    [value]="exportations"
+    [paginator]="true"
+    [rows]="9"
+    filterBy="numero_do"
+    [sortField]="sortField"
+    [sortOrder]="sortOrder"
+    layout="grid"
+  >
+  
+    <ng-template pTemplate="header">
+      <div class="flex flex-column md:flex-row md:justify-content-between">
+        <span class="p-input-icon-left mb-2 md:mb-0">
+          <i class="pi pi-search"></i>
+          <input
+            type="search"
+            pInputText
+            placeholder="Buscar por numero_do"
+            (input)="dv.filter($any($event.target).value)"
+          />
+        </span>
+      </div>
+    </ng-template>
+    <ng-template let-exportation pTemplate="gridItem">
+      <div class="col-12 md:col-3">
+        <div class="exportation-grid-item card">
+          <div class="exportation-grid-item-top">
+            <div>
+              <i class="pi pi-box exportation-category-icon"></i>
+              <span class="exportation-category">{{ exportation.numero_do }}</span>
+            </div>
+          </div>
+          <div class="exportation-grid-item-content">
+            <!--        <div class="exportation-name">{{exportation.numero_do}}</div> -->
+            <!--  <div class="exportation-description">{{exportation.estado}}</div> -->
+          </div>
+          <div class="exportation-grid-item-bottom">
+            <span class="exportation-status">{{ exportation.estado }}</span>
+            <p-button
+              icon="pi pi-arrow-right"
+              [routerLink]="['/exportation/container', exportation.numero_do]"
+            ></p-button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-dataView>
+</div>

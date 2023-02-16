@@ -1,0 +1,156 @@
+<p-toast></p-toast>
+
+<div class="progress-spinner" *ngIf="loader">
+    <p-progressSpinner></p-progressSpinner>
+</div>
+
+<div class="card">
+    <div class="grid">
+        <div class="col" *ngFor="let file of initialFiles">
+            <p-card  header="Documento {{file.name}}"  styleClass="shadow-4">
+                <p-fileUpload #fileForm [auto]="true" chooseLabel="Subir {{file.name}}"  mode="basic" accept=".pdf" [customUpload]="true" (uploadHandler)="myUploader($event,fileForm,file)"></p-fileUpload>
+                <ng-template pTemplate="footer" >
+                    <p-progressBar *ngIf="file.progressBar" mode="indeterminate"></p-progressBar>
+                    <br>
+                    <div *ngIf="file.fileUpdated || file.fileName != '' ">
+                        <button pButton pRipple type="button"  icon="pi pi pi-download" (click)="getSignedUrl(file.fileName)" [label]="file.fileName" class="p-button-rounded p-button-success"></button>
+                    </div>
+                </ng-template>
+            </p-card>
+        </div>
+    </div>
+    <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+            <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="createContainer()" ></button>
+            <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedContainers()" [disabled]="!selectedContainer || !selectedContainer.length"></button>
+        </ng-template>
+    </p-toolbar>
+
+    <p-table #dt [value]="containers" [rows]="10" [paginator]="true" [globalFilterFields]="['numero_do','numero_contenedor','estado','destino']"
+        [(selection)]="selectedContainer" [rowHover]="true" dataKey="numero_contenedor"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [showCurrentPageReport]="true">
+        <ng-template pTemplate="caption">
+            <div class="p-d-flex p-ai-center p-jc-between">
+                <h5 class="p-m-0">Contenedores</h5>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Busqueda..." />
+                </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 3rem">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th pSortableColumn="numero_contenedor">Numero Contenedor <p-sortIcon field="numero_contenedor"></p-sortIcon></th>
+                <th pSortableColumn="numero_do">Numero do <p-sortIcon field="numero_do"></p-sortIcon></th>
+                <th pSortableColumn="volumen">Volumen <p-sortIcon field="volumen"></p-sortIcon></th>
+                <th pSortableColumn="estado">Estado <p-sortIcon field="Estado"></p-sortIcon></th>
+                <th pSortableColumn="tara">tara <p-sortIcon field="tara"></p-sortIcon></th>
+                <th pSortableColumn="naviera">naviera <p-sortIcon field="naviera"></p-sortIcon></th>
+                <th pSortableColumn="destino">Destino <p-sortIcon field="destino"></p-sortIcon></th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-container>
+            <tr>
+                <td>
+                    <p-tableCheckbox [value]="container"></p-tableCheckbox>
+                </td>
+                <td>{{container.numero_contenedor}}</td>
+                <td>{{container.numero_do}}</td>
+                <td>{{container.volumen}}</td>
+                <td><span>{{container.estado}}</span></td>
+                <td>{{container.tara}}</td>
+                <td>{{container.naviera}}</td>
+                <td>{{container.destino}}</td>
+                <td>
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" (click)="editContainer(container)" ></button>
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteSelectedContainer(container)" ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="p-d-flex p-ai-center p-jc-between">
+                In total there are {{containers ? containers.length : 0 }} products.
+            </div>
+        </ng-template>
+    </p-table>
+</div>
+<p-dialog [(visible)]="containerDialog" [style]="{width: '450px'}" header="Contenedor" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="default" >
+        <div class="p-field">
+            <label for="numero_contenedor">Numero Contenedor</label>
+            <input type="text" pInputText [disabled]="!newContainer" id="numero_contenedor" [(ngModel)]="container.numero_contenedor" required/>
+            <small class="p-invalid" *ngIf="submitted && !container.numero_contenedor">numero_contenedor es requerido</small>
+        </div>
+        <div class="p-field">
+            <label for="estado">Estado</label>
+            <input type="text" pInputText id="estado" [(ngModel)]="container.estado" required/>
+            <small class="p-invalid" *ngIf="submitted && !container.estado">estado es requerido</small>
+        </div>
+        <div class="p-field">
+            <label for="volumen">Volumen</label>
+            <p-selectButton required [options]="volumenOption" [(ngModel)]="container.volumen" optionLabel="label" optionValue="value"></p-selectButton>
+        </div>
+        <div class="p-field">
+                <label for="material">Material</label>
+                <input type="text" pInputText id="material" [(ngModel)]="container.material" required/>
+                <small class="p-invalid" *ngIf="submitted && !container.material">Material es requerido</small>
+        </div>
+        <div class="p-field">
+                <label for="tara">Tara</label>
+                <p-inputNumber inputId="integeronly" [(ngModel)]="container.tara">
+                </p-inputNumber>
+                <small class="p-invalid" *ngIf="submitted && !container.tara">Tara es requerido</small>
+        </div>
+        <div class="p-field">
+            <label for="naviera">Naviera</label>
+            <input type="text" pInputText id="naviera" [(ngModel)]="container.naviera" required/>
+            <small class="p-invalid" *ngIf="submitted && !container.naviera">Naviera es requerido</small>
+        </div>
+        <div class="p-field">
+            <label for="destino">Destino</label>
+            <p-dropdown [options]="countries" appendTo="body" [(ngModel)]="selectedCountry" [filter]="true" optionLabel="name" filterBy="name" [showClear]="true" placeholder="Select a Country">
+                <ng-template pTemplate="filter" let-options="options">
+                    <div class="flex p-3">
+                        <div class="p-inputgroup" (click)="$event.stopPropagation()">
+                            <span class="p-inputgroup-addon"><i class="pi pi-search"></i></span>
+                            <input type="text" pInputText placeholder="Filter" [(ngModel)]="filterValue" (keyup)="options.filter($event)">
+                        </div>
+                        <button pButton icon="pi pi-times" class="ml-3" (click)="myResetFunction(options)"></button>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="selectedItem">
+                    <div class="country-item country-item-value" *ngIf="selectedCountry">
+                        <div>{{selectedCountry.name}}</div>
+                    </div>
+                </ng-template>
+                <ng-template let-country pTemplate="item">
+                    <div class="country-item">
+                        <div>{{country.name}}</div>
+                    </div>
+                </ng-template>
+            </p-dropdown>
+        </div>
+        <div class="p-field">
+            <label for="sellos">Sellos</label>
+            <input type="text" pInputText id="s" [(ngModel)]="container.sellos" required/>
+            <small class="p-invalid" *ngIf="submitted && !container.sellos">Sellos es requerido</small>
+        </div>
+        <div class="p-field">
+            <label for="ETA">ETA</label>
+            <p-calendar [(ngModel)]="container.ETA" [showIcon]="true" dateFormat="dd-mm-yy"></p-calendar>
+
+        </div>
+
+     </ng-template>
+    
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveContainer()"></button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
