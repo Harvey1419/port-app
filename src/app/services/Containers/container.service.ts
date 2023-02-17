@@ -2,8 +2,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { updateContainer } from 'src/app/models/container.model';
+import { url_pro } from 'src/config/enviroment';
 
-const url = `http://localhost:3000`
+const url = `${url_pro}`
 
 @Injectable({
   providedIn: 'root'

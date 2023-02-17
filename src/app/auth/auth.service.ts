@@ -1,9 +1,10 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { CookieService } from 'ngx-cookie-service';
+import { url_pro } from "src/config/enviroment";
 import { UserLogin } from "../models/user.mode";
 
-const url = `http://127.0.0.1:3000`
+const url = `${url_pro}`
 
 @Injectable({
     providedIn: 'root'

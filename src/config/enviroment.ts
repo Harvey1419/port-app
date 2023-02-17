@@ -1,0 +1,1 @@
+export const url_pro = `http://ec2-44-211-220-250.compute-1.amazonaws.com/api`

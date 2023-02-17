@@ -1,8 +1,9 @@
 import { HttpClient, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { url_pro } from 'src/config/enviroment';
 
-const url = `http://localhost:3000`
+const url = `${url_pro}`
 
 @Injectable({
   providedIn: 'root'

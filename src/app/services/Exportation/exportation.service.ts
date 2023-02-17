@@ -2,8 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { Exportation } from 'src/app/models/exportation.model';
+import { url_pro } from 'src/config/enviroment';
 
-const url = `http://localhost:3000`
+const url = `${url_pro}`
 
 @Injectable({
   providedIn: 'root'

@@ -112,7 +112,7 @@
         </div>
         <div class="p-field">
             <label for="destino">Destino</label>
-            <p-dropdown [options]="countries" appendTo="body" [(ngModel)]="selectedCountry" [filter]="true" optionLabel="name" filterBy="name" [showClear]="true" placeholder="Select a Country">
+            <p-dropdown [options]="countries" appendTo="body"  [(ngModel)]="selectedCountry" [filter]="true" optionLabel="name" filterBy="name" [showClear]="true" [placeholder]="countryMessage">
                 <ng-template pTemplate="filter" let-options="options">
                     <div class="flex p-3">
                         <div class="p-inputgroup" (click)="$event.stopPropagation()">

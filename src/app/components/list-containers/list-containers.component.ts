@@ -13,7 +13,7 @@ import { ExportationService } from 'src/app/services/Exportation/exportation.ser
 import { S3Service } from 'src/app/services/s3/s3.service';
 interface Country {
   name: string,
-  code: string
+  code?: string
 }
 @Component({
   selector: 'app-list-containers',
@@ -39,6 +39,7 @@ export class ListContainersComponent implements OnInit {
   loader: boolean;
   files: FileObj[]
   initialFiles: Array<any> = []
+  countryMessage: string
 
   constructor(private exportationService: ExportationService, private route: ActivatedRoute, private containerService: ContainerService, public messageService: MessageService, public confirmationService: ConfirmationService,
     private s3Service: S3Service) {
@@ -89,6 +90,7 @@ export class ListContainersComponent implements OnInit {
               obj.fileName = fileNameList[index]
             }
           })
+          
         this.loader = false
       })
       this.containerService.getContainersByNumeroDo(this.numero_do).subscribe(data => {
@@ -131,12 +133,10 @@ export class ListContainersComponent implements OnInit {
     if (this.validationModal()) {
       if (this.container.numero_contenedor && this.container.numero_do) {
         try {
+          this.selectedCountry.name
           this.container.destino = this.selectedCountry.name
           this.containers[this.getContainerByNumber(this.container.numero_contenedor)] = this.container
-
           const body: updateContainer = this.createBodyToUpdateContainer(this.container);
-          console.log(body);
-
           await this.containerService.editContainerBycontainerNumber(this.container.numero_do, this.container.numero_contenedor, body)
           this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Contenedor Actualizado', life: 3000 });
         } catch (error: any) {
@@ -146,6 +146,7 @@ export class ListContainersComponent implements OnInit {
       else {
         try {
           if (this.newContainer) {
+            this.container.destino = this.selectedCountry.name
             await this.containerService.createContainer(this.numero_do, this.container)
             this.container.numero_do = this.numero_do
             this.containers.push(this.container)
@@ -180,12 +181,26 @@ export class ListContainersComponent implements OnInit {
     this.submitted = false
     this.newContainer = true
     this.containerDialog = true
+    this.messageCountry()
   }
 
   editContainer(container: Container) {
     this.newContainer = false
     this.container = { ...container };
+    this.selectedCountry = {
+      name: this.container.destino as string
+    }
     this.containerDialog = true;
+    this.messageCountry()
+  }
+
+  messageCountry(){
+    if(this.newContainer){
+      this.countryMessage = "Selecciona un pais"
+    }else if(!this.newContainer){
+      this.countryMessage = this.selectedCountry.name
+    }
+
   }
 
   hideDialog() {
