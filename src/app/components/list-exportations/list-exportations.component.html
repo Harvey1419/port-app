@@ -1,8 +1,19 @@
+<p-toast></p-toast>
+
 <div class="progress-spinner" *ngIf="loader">
   <p-progressSpinner></p-progressSpinner>
 </div>
 
+
+
 <div class="card">
+  
+  <p-toolbar styleClass="p-mb-4">
+    <ng-template pTemplate="left">
+        <button pButton pRipple label="Agregar nueva exportación" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="createExportation()" ></button>
+    </ng-template>
+  </p-toolbar>
+
   <p-dataView
     #dv
     [value]="exportations"
@@ -44,7 +55,7 @@
             <span class="exportation-status">{{ exportation.estado }}</span>
             <p-button
               icon="pi pi-arrow-right"
-              [routerLink]="['/exportation/container', exportation.numero_do]"
+              [routerLink]="['/exportation/exportations', exportation.numero_do]"
             ></p-button>
           </div>
         </div>
@@ -52,3 +63,31 @@
     </ng-template>
   </p-dataView>
 </div>
+
+<p-dialog  header="Crear Exportación" [breakpoints]="{'960px': '75vw', '640px': '100vw'}" [(visible)]="exportationsDialog" [style]="{width: '50vw'}" [modal]="true" [baseZIndex]="10000">
+  <ng-template pTemplate="default" >
+    <div class="p-field">
+      <label for="numero_do">Numero Do</label>
+      <input type="text" pInputText  id="numero_do" [(ngModel)]="exportation.numero_do" required/>
+      <small class="p-invalid" *ngIf="submitted && !exportation.numero_do">numero_contenedor es requerido</small>
+  </div>
+    <div class="grid">
+      <div class="col" *ngFor="let file of initialFiles">
+          <p-card  header="Documento {{file.name}}"  styleClass="shadow-4">
+              <p-fileUpload #fileForm [auto]="true" chooseLabel="Subir {{file.name}}" mode="basic" accept=".pdf" [customUpload]="true" (uploadHandler)="myUploader($event,fileForm,file)" ></p-fileUpload>
+              <ng-template pTemplate="footer" >
+                  <br>
+                  <small class="p-invalid" *ngIf="submitted && !file.fileName">Por favor ingresa un archivo</small>
+                  <div *ngIf="file.fileName != undefined">
+                      <button pButton pRipple type="button"  [label]="file.fileName" class="p-button-rounded p-button-success"></button>
+                  </div>
+              </ng-template>
+          </p-card>
+      </div>
+  </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveExportation()"></button>
+</ng-template>
+</p-dialog>

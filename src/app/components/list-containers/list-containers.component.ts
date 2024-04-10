@@ -11,6 +11,7 @@ import { FileObj } from 'src/app/models/file.model';
 import { ContainerService } from 'src/app/services/Containers/container.service';
 import { ExportationService } from 'src/app/services/Exportation/exportation.service';
 import { S3Service } from 'src/app/services/s3/s3.service';
+import { TrelloService } from 'src/app/services/trello/trello.service';
 interface Country {
   name: string,
   code?: string
@@ -40,9 +41,10 @@ export class ListContainersComponent implements OnInit {
   files: FileObj[]
   initialFiles: Array<any> = []
   countryMessage: string
+  moreFiles: Array<any> = []
 
   constructor(private exportationService: ExportationService, private route: ActivatedRoute, private containerService: ContainerService, public messageService: MessageService, public confirmationService: ConfirmationService,
-    private s3Service: S3Service) {
+    private s3Service: S3Service, private trelloService: TrelloService) {
 
     this.volumenOption = [
       { label: "20", value: 20 },
@@ -61,21 +63,28 @@ export class ListContainersComponent implements OnInit {
       { name: 'United States', code: 'US' }
     ];
 
-    this.files = [
-      { name: 'SAE' }, { name: 'factura' }, { name: 'CP' }
+    this.initialFiles = [
+      { name: 'booking' }, { name: 'factura' }, { name: 'CP' }
     ]
 
-    this.initialFiles = this.files.map(file => {
-      return {
-        ...file,
-        progressBar: null,
-        fileUpdated: null,
-        fileName: null
-      }
-    })
+    this.moreFiles = [
+      { name: 'SAE' }
+    ]
+
+    modifyFiles(this.initialFiles);
+    modifyFiles(this.moreFiles);
+
+    function modifyFiles(files: Array<any>) {
+      files = files.map(file => {
+        return {
+          ...file,
+          progressBar: null,
+          fileUpdated: null,
+          fileName: null
+        };
+      });
+    }
   }
-
-
 
 
   ngOnInit() {
@@ -85,12 +94,17 @@ export class ListContainersComponent implements OnInit {
       this.exportationService.getExportationByDo(this.numero_do).subscribe(data => {
         this.exportation = data[0]
           this.initialFiles.map((obj,index) => {
-            const fileNameList = [this.exportation.SAE,this.exportation.factura, this.exportation.CP]
+            const fileNameList = [this.exportation.booking,this.exportation.factura, this.exportation.CP]
             if(obj.fileName == null){
               obj.fileName = fileNameList[index]
             }
-          })
-          
+          })          
+          this.moreFiles.map((obj,index) => {
+            const fileNameList = [this.exportation.SAE,this.exportation.BL, this.exportation.dex]
+            if(obj.fileName == null){
+              obj.fileName = fileNameList[index]
+            }
+          })          
         this.loader = false
       })
       this.containerService.getContainersByNumeroDo(this.numero_do).subscribe(data => {
@@ -227,19 +241,21 @@ export class ListContainersComponent implements OnInit {
   }
 
   async myUploader(event: any, form: any, file: any) {
+    console.log('Archivo',file);
     file.progressBar = true
     try {
-      const res: any = await this.s3Service.uploadFile(event.files[0], file.name, this.numero_do).subscribe({
-        next: (event: any) => {
-          if (event.type == HttpEventType.UploadProgress) {
-          } else if (event instanceof HttpResponse) {
+      await this.s3Service.uploadFile(event.files[0], file.name, this.numero_do).subscribe({
+        next: async (event: any) => {
+          if (event instanceof HttpResponse) {
             this.messageService.add({ severity: 'success', summary: 'Successful', detail: event.body.Mensaje, life: 3000 })
+              await this.sendSAEemail(file);
+              if(file.name === "SAE") await this.trelloService.createCard(`Solicitud de solicitud de transporte a puerto orden: ${this.numero_do}`)
               file.fileUpdated = true
               file.progressBar = false
-              
           }
         }
       }) 
+      
       file.fileName = event.files[0].name
       form.clear()
     } catch (error: any) {
@@ -247,9 +263,16 @@ export class ListContainersComponent implements OnInit {
     }
   }
 
+  private async sendSAEemail(file: any) {
+      try {
+        await this.exportationService.sendEmail(this.numero_do, file.name);
+      } catch (error: any) {
+        this.messageService.add({ severity: 'error', summary: 'Fallido', detail: error.message });
+      }
+  }
+
   async getSignedUrl(fileName: string){
     const signedUrl: any = await this.s3Service.getSignedUrl(fileName)
-    console.log(signedUrl.URL);
     window.open(signedUrl.URL,'_blank')
     
   }

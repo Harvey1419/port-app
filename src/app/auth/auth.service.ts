@@ -18,9 +18,9 @@ export class AuthService {
         return new Promise((Resolve,Reject) => {
             this.httpClient.post(`${url}/usuarios/login`, username).subscribe({
                 next: (data: any) => {
-                    this.cookie.set('token', data.token)
-                    this.cookie.set('company',data.empresa)
-                    this.cookie.set('role', data.role)
+                    this.cookie.set('token', data.token ,0.25)
+                    this.cookie.set('company',data.empresa, 0.25)
+                    this.cookie.set('role', data.role0, 0.25)
                     Resolve(data)
                 },
                 error: (err) => Reject(err)
@@ -30,6 +30,10 @@ export class AuthService {
 
     getCompany(){
         return this.cookie.get('company')
+    }
+
+    getRole(){
+        return this.cookie.get('role')
     }
 
 

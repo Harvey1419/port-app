@@ -14,7 +14,7 @@ const routes: Routes = [
       {
         path: 'exportation', component: ListExportationsComponent, canActivate: [AuthGuard]
       },
-      { path: 'exportation/container/:numero_do', component: ListContainersComponent, canActivate: [AuthGuard] }
+      { path: 'exportation/exportations/:numero_do', component: ListContainersComponent, canActivate: [AuthGuard] }
 
     ]
   },

@@ -60,11 +60,16 @@ export class AppConfigComponent {
 
     changeTheme(theme: string, colorScheme: string) {
         const themeLink = <HTMLLinkElement>document.getElementById('theme-css');
+        console.log(themeLink);
         const newHref = themeLink.getAttribute('href')!.replace(this.layoutService.config.theme, theme);
+        console.log('->',newHref);
+        
         this.layoutService.config.colorScheme
         this.replaceThemeLink(newHref, () => {
             this.layoutService.config.theme = theme;
             this.layoutService.config.colorScheme = colorScheme;
+            console.log(this.layoutService.config.theme);
+             
             this.layoutService.onConfigUpdate();
         });
     }
@@ -73,7 +78,7 @@ export class AppConfigComponent {
         const id = 'theme-css';
         const themeLink = <HTMLLinkElement>document.getElementById('theme-css');
         const cloneLinkElement = <HTMLLinkElement>themeLink.cloneNode(true);
-
+        
         cloneLinkElement.setAttribute('href', href);
         cloneLinkElement.setAttribute('id', id + '-clone');
 
@@ -84,6 +89,8 @@ export class AppConfigComponent {
             cloneLinkElement.setAttribute('id', id);
             onComplete();
         });
+        console.log(cloneLinkElement);
+        
     }
 
     decrementScale() {

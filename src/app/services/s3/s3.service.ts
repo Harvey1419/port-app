@@ -23,6 +23,17 @@ export class S3Service {
       return this.httpClient.request(req);
   }
 
+  uploadFilePromise(file: File, method: string, numero_do:string){
+    return new Promise((Resolve, Reject) => {
+      const formData = new FormData()
+      formData.append('file',file)
+      return this.httpClient.post(`${url}/file/upload/${method}/${numero_do}`,formData).subscribe({
+        next: (data) => Resolve(data),
+        error: (err) => Reject(err)
+       })
+    })
+  }
+
   getSignedUrl(fileName: string){
     return new Promise((Resolve, Reject) => {
       return this.httpClient.get(`${url}/file/download/${fileName}`).subscribe({

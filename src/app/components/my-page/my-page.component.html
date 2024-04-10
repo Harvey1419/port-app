@@ -1,1 +1,14 @@
-<h1>BIENVENIDOS AL MODULO PARA EL CONTROL DE PROCESOS</h1>
+<div class="col-12 lg:col-6 xl:col-3">
+    <div class="card mb-0">
+        <div class="flex justify-content-between mb-3">
+            <div>
+                <span class="block text-500 font-medium mb-3">Tareas Pendientes</span>
+                <div class="text-green-500 font-medium text-xl">{{cardsLength}}</div>
+            </div>
+            <div class="flex align-items-center justify-content-center bg-blue-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
+                <i class="pi pi-calendar text-blue-500 text-xl"></i>
+            </div>
+        </div>
+        <p-button styleClass="p-button-sm" class="font-medium" label="Gestor de tareas" (onClick)="redirectToTrello()" icon="pi pi-arrow-right"></p-button>
+    </div>
+</div>

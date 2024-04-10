@@ -19,6 +19,20 @@
             </p-card>
         </div>
     </div>
+    <div class="grid">
+        <div class="col" *ngFor="let file of moreFiles">
+            <p-card  header="Documento {{file.name}}"  styleClass="shadow-4">
+                <p-fileUpload #fileForm [auto]="true" chooseLabel="Subir {{file.name}}"  mode="basic" accept=".pdf" [customUpload]="true" (uploadHandler)="myUploader($event,fileForm,file)"></p-fileUpload>
+                <ng-template pTemplate="footer" >
+                    <p-progressBar *ngIf="file.progressBar" mode="indeterminate"></p-progressBar>
+                    <br>
+                    <div *ngIf="file.fileName && file.fileName != '' ">
+                        <button pButton pRipple type="button"  icon="pi pi pi-download" (click)="getSignedUrl(file.fileName)" [label]="file.fileName" class="p-button-rounded p-button-success"></button>
+                    </div>
+                </ng-template>
+            </p-card>
+        </div>
+    </div>
     <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
             <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="createContainer()" ></button>
@@ -26,9 +40,9 @@
         </ng-template>
     </p-toolbar>
 
-    <p-table #dt [value]="containers" [rows]="10" [paginator]="true" [globalFilterFields]="['numero_do','numero_contenedor','estado','destino']"
+    <p-table #dt responsiveLayout="stack" [value]="containers" [rows]="10" [paginator]="true" [globalFilterFields]="['numero_do','numero_contenedor','estado','destino']"
         [(selection)]="selectedContainer" [rowHover]="true" dataKey="numero_contenedor"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [showCurrentPageReport]="true">
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [showCurrentPageReport]="true" class="">
         <ng-template pTemplate="caption">
             <div class="p-d-flex p-ai-center p-jc-between">
                 <h5 class="p-m-0">Contenedores</h5>

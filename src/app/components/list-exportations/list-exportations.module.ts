@@ -17,6 +17,11 @@ import { RouterModule } from '@angular/router';
 import { ListContainersModule } from '../list-containers/list-containers.module';
 import { ListContainersComponent } from '../list-containers/list-containers.component';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ToolbarModule } from 'primeng/toolbar';
+import { CardModule } from 'primeng/card';
+import { FileUploadModule } from 'primeng/fileupload';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   imports: [
@@ -34,8 +39,13 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     RatingModule,
     RouterModule,
     FormsModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
+    ToolbarModule,
+    CardModule,
+    ToastModule,
+    FileUploadModule
   ],
+  providers: [MessageService,ConfirmationService],
   declarations: [ListExportationsComponent]
 })
 export class ListExportationsModule { }
